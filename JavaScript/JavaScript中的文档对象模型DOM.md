@@ -52,19 +52,19 @@ Node 对象定义了几个常量，对应这些类型值。如：
 
 不同节点的nodeType属性值和对应的常量如下。
 
->文档节点（document）：**9**，对应常量`Node.DOCUMENT_NODE`
+> 文档节点（document）：**9**，对应常量`Node.DOCUMENT_NODE`
 
-元素节点（element）：**1**，对应常量`Node.ELEMENT_NODE`
+> 元素节点（element）：**1**，对应常量`Node.ELEMENT_NODE`
 
-属性节点（attr）：**2**，对应常量`Node.ATTRIBUTE_NODE`
+> 属性节点（attr）：**2**，对应常量`Node.ATTRIBUTE_NODE`
 
-文本节点（text）：**3**，对应常量`Node.TEXT_NODE`
+> 文本节点（text）：**3**，对应常量`Node.TEXT_NODE`
 
-文档片断节点（DocumentFragment）：**11**，对应常量`Node.DOCUMENT_FRAGMENT_NODE`
+> 文档片断节点（DocumentFragment）：**11**，对应常量`Node.DOCUMENT_FRAGMENT_NODE`
 
-文档类型节点（DocumentType）：**10**，对应常量`Node.DOCUMENT_TYPE_NODE`
+> 文档类型节点（DocumentType）：**10**，对应常量`Node.DOCUMENT_TYPE_NODE`
 
-注释节点（Comment）：**8**，对应常量`Node.COMMENT_NODE`
+> 注释节点（Comment）：**8**，对应常量`Node.COMMENT_NODE`
 
 
 **最常用的有两个，一定要记住：元素节点的值 1 和文本节点的值 3** 。
