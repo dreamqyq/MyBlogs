@@ -36,6 +36,7 @@ Content-Type: application/x-www-form-urlencoded
 
 1234567890
 ```
+注：第二部分中，至少需要有`Host`、`Content-Length`、`Content-Type`
 
 ##### 2. 综上所得，请求一共包含以下部分
 - 1 动词 路径 协议/版本
