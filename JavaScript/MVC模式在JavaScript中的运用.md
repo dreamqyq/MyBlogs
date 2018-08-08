@@ -32,19 +32,49 @@ MVC模式在概念上强调 Model, View, Controller 的分离，各个模块也�
 
 ![图像来自方方](https://upload-images.jianshu.io/upload_images/11827773-e57052a06919d24c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-具体解释：Model 和服务器交互，Model 将得到的数据交给 Controller，Controller 把数据填入 View，并监听 View
+**具体解释**：Model 和服务器交互，Model 将得到的数据交给 Controller，Controller 把数据填入 View，并监听 View
 用户操作 View，如点击按钮，Controller 就会接受到点击事件，Controller 这时会去调用 Model，Model 会与服务器交互，得到数据后返回给 Controller，Controller 得到数据就去更新 View
 
-## 5、简单来说
+## 5、前端中的MVC
 
-这个模式认为，程序不论简单或复杂，从结构上看，都可以分成三层。
-- 1）最上面的一层，是直接面向最终用户的"视图层"（View）。它是提供给用户的操作界面，是程序的外壳。
-- 2）最底下的一层，是核心的"数据层"（Model），也就是程序需要操作的数据或信息。
-- 3）中间的一层，就是"控制层"（Controller），它负责根据用户从"视图层"输入的指令，选取"数据层"中的数据，然后对其进行相应的操作，产生最终结果。
+- MVC 是什么：
+MVC 是一种设计模式（或者软件架构），把系统分为三层：Model数据、View视图和Controller控制器。
+- MVC在前端分别负责什么
+  - `Model` 数据管理，包括数据逻辑、数据请求、数据存储等功能。前端 `Model` 主要负责 `AJAX` 请求或者 `LocalStorage` 存储
+  - `View` 负责用户界面，前端 View 主要负责 `HTML` 渲染。
+  - `Controller` 负责处理`View` 的事件，并更新 `Model`；也负责监听 `Model`的变化，并更新 `View`，`Controller` 控制其他的所有流程。
 
-这三层是紧密联系在一起的，但又是互相独立的，每一层内部的变化不影响其他层。每一层都对外提供接口（Interface），供上面一层调用。这样一来，软件就可以实现模块化，修改外观或者变更数据都不用修改其他层，大大方便了维护和升级。
+- 用代码大概说明 MVC 三个对象分别有哪些重要属性和方法：
+```
+var model = {
+    data: null,
+    init(){}
+    fetch(){}
+    save(){}
+    update(){}
+    delete(){}
+}
+view = {
+    init() {}
+    template: '<h1>hi</h1'>
+}
+controller = {
+    view: null,
+    model: null,
+    init(view, model){
+        this.view = view
+        this.model = model
+        this.bindEvents()
+    }
+    render(){
+        this.view.querySelector('name').innerText = this.model.data.name
+    },
+    bindEvents(){}
+}
+```
 
-## 6、举个例子：
+
+## 6、具体的例子：
 
 代码链接：https://github.com/dreamqyq/resume/blob/master/js/message.js
 **注**：这一段是完全使用了MVC设计思想优化过的代码，包括了说明操作的部分是哪一块的**view**部分，操作数据的对象的**model**部分，对view部分进行各种逻辑操作的**controller**部分。这段代码实现的使用[leancloud](https://leancloud.cn/)提供的库写的留言板功能。
@@ -119,5 +149,3 @@ let view = document.querySelector('section.message')
   }
   controller.init(view,model)
 ```
-
-
