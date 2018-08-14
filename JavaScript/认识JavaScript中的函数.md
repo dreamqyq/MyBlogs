@@ -1,4 +1,4 @@
-**前言**：本文将详细的介绍JS中函数的相关概念，总结函数中比较容易理解错的坑，让我们更加全面的认识函数。最后会简单介绍一下传说中的作用域和闭包（暂不细说）。部分概念与代码参考[阮一峰JS教程](http://javascript.ruanyifeng.com/grammar/function.html)。
+**前言**：本文将详细的介绍JS中函数的相关概念（包括函数的`call stack` 、`this` 、作用域、闭包、柯里化、高阶函数等），总结函数中比较容易理解错的坑，让我们更加全面的认识函数。部分概念与代码参考[阮一峰JS教程](http://javascript.ruanyifeng.com/grammar/function.html)。
 
 ---
 
@@ -98,7 +98,6 @@ fn5.name // "anonymous"
 // 箭头函数的name属性，指的也是接收该函数的变量名
 var fn6 = () => {}
 fn6.name // "fn6"
-
 ```
 
 - `length` 属性
@@ -128,32 +127,41 @@ f.toString()
 //   }"
 ```
 
-- `call()` 方法 见“ 3、函数的调用 ”小节
+## 5、`call` & `apply` & `bind` 的用法
+在 javascript 中，`call` 和 `apply` 都是为了改变某个函数运行时的上下文（context）而存在的，换句话说，就是为了改变函数体内部 this 的指向。
+- `call()` 方法调用一个函数, 其具有一个指定的`this`值和分别地提供的参数(参数的列表)。
 
-## 5、函数中的`this` 和 `arguments`
-（本文只介绍this和arguments是什么，暂时不介绍他们的用法）
-首先举个例子：
-声明 `function fn(x,y){ return x+y }`
-调用 ` fn.call( undefined , 1 ,2 ) `
-其中 ，`undefined` 指的就是函数fn的`this` ，`1,2` 指的就是函数的`arguments`
-注意：在普通模式下，this是undefined时，浏览器会将其变为`window`
-在严格模式下，`this` 是 `undefined` ，打印出来的就是`undefined` 
-举例：
-```
-// 普通模式下：
-function f(){
-    console.log(this)
-}
-f.call(1)  // Number {1}
+- `apply()` 方法调用一个函数, 其具有一个指定的`this`值，以及作为一个数组（或类似数组的对象）提供的参数。
 
-// 严格模式下：
-function f(){
-    'use strict'
-    console.log(this)
-}
-f.call(1)  // 1
+- `bind()` 方法创建一个新的函数，被调用时，将其`this`关键字设置为提供的值，在调用新函数时，在任何提供之前提供一个给定的参数序列。
+
+- 对于` apply`、`call `二者而言，作用完全一样，只是接受参数的方式不太一样，`call `需要**把参数按顺序传递进去**，而 `apply `则是**把参数放在数组里**。
+- `apply` 、` call `、`bind `三者都是用来改变函数的this对象的指向的；
+`apply `、 `call `、`bind` 三者第一个参数都是this要指向的对象，也就是想指定的上下文；
+`apply `、 `call` 、`bind `三者都可以利用后续参数传参；
+`bind` 是返回对应函数，便于稍后调用；`apply` 、`call `则是立即调用 。
+
+举例说明：
 ```
-即，**普通模式下，浏览器会把`this` 转化为对象，严格模式下会禁止这样的转换**。
+var obj = {
+    x: 81,
+};
+ 
+var foo = {
+    getX: function() {
+        return this.x;
+    }
+}
+ 
+console.log(foo.getX.bind(obj)());  //81
+console.log(foo.getX.call(obj));    //81
+console.log(foo.getX.apply(obj));   //81
+
+// 三个输出的都是81，但是注意看使用 bind() 方法的，他后面多了对括号。
+//也就是说，区别是，当你希望改变上下文环境之后并非立即执行，而是回调执行的时候，使用 bind() 方法。而 apply/call 则会立即执行函数。
+```
+
+
 
 
 ## 6、call stack 调用栈
@@ -186,27 +194,88 @@ console.log('end')
 *   [嵌套调用](http://latentflip.com/loupe/?code=ZnVuY3Rpb24gYSgpewogICAgY29uc29sZS5sb2coJ2ExJykKICAgIGIuY2FsbCgpCiAgICBjb25zb2xlLmxvZygnYTInKQogIHJldHVybiAnYScgIAp9CmZ1bmN0aW9uIGIoKXsKICAgIGNvbnNvbGUubG9nKCdiMScpCiAgICBjLmNhbGwoKQogICAgY29uc29sZS5sb2coJ2IyJykKICAgIHJldHVybiAnYicKfQpmdW5jdGlvbiBjKCl7CiAgICBjb25zb2xlLmxvZygnYycpCiAgICByZXR1cm4gJ2MnCn0KYS5jYWxsKCkKY29uc29sZS5sb2coJ2VuZCcp!!! "null")
 *   [递归调用](http://latentflip.com/loupe/?code=ZnVuY3Rpb24gc3VtKG4pewogICAgaWYobj09MSl7CiAgICAgICAgcmV0dXJuIDEKICAgIH1lbHNlewogICAgICAgIHJldHVybiBuICsgc3VtLmNhbGwodW5kZWZpbmVkLCBuLTEpCiAgICB9Cn0KCnN1bS5jYWxsKHVuZGVmaW5lZCw1KQ%3D%3D!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4%3D "null")
 
+## 7、函数中的`this` 和 `arguments`
+（本文只介绍this和arguments是什么，暂时不介绍他们的用法，关于`this`更深入的认识，可见我的另一篇[关于JS面向对象的博客](https://www.jianshu.com/p/f682c3a59692) 第7条）
+- 首先举个例子：
+声明 `function fn(x,y){ return x+y }`
+调用 ` fn.call( undefined , 1 ,2 ) `
+其中 ，`undefined` 指的就是函数fn的`this` ，即，`this`是`call()`的第一个参数。`1,2` 指的就是函数的`arguments`，需要注意的一点是：`arguments`是一个类数组对象。
 
-## 7、作用域
+- __注意：在普通模式下，this是undefined时，浏览器会将其变为`window`
+在严格模式下，`this` 是 `undefined` ，打印出来的就是`undefined`__ 。
+- 举例：
+```
+// 普通模式下：
+function f(){
+    console.log(this)
+}
+f.call(1)  // Number {1}
+
+// 严格模式下：
+function f(){
+    'use strict'
+    console.log(this)
+}
+f.call(1)  // 1
+```
+即，**普通模式下，浏览器会把`this` 转化为对象，严格模式下会禁止这样的转换**。
+- **注意**：`this`必须是对象，或者这么说，__`this`就是函数与对象之间的羁绊__。
+举个例子：`fn.call(10)`，意思是想让函数`fn`的`this`是数字10，但实际上
+JS会将其变成一个数字对象，即`Number(10)`。
+
+## 8、词法作用域（也叫静态作用域）
 
 > 作用域（scope）指的是变量存在的范围。在 ES5 的规范中，Javascript 只有两种作用域：一种是全局作用域，变量在整个程序中一直存在，所有地方都可以读取；另一种是函数作用域，变量只在函数内部存在。ES6 又新增了块级作用域。
 
 规则：
-**按照语法树，就近原则**
+**按照抽象语法树，就近原则**
 **注意：我们只能确定变量是哪个变量，但是不能确定变量的值**
 
 在判断作用域时，还要注意函数作用域内部会产生的“变量提升”现象。var命令声明的变量，不管在什么位置，变量声明都会被提升到函数体的头部。
 
-## 8、什么是闭包
-（本节只介绍闭包的概念，暂不深入，这里提供[方方的一篇介绍闭包的文章](https://zhuanlan.zhihu.com/p/22486908)用于深入了解）
+## 9、什么是闭包
+（本节只介绍闭包的概念，暂不深入，这里提供[方方的一篇介绍闭包的文章](https://zhuanlan.zhihu.com/p/22486908)用于深入了解，或可见我写的一篇[关于前端基础知识十题](https://www.jianshu.com/p/1a087a8bd219)中的第四题）
 
 如果一个函数使用了它范围外的变量，那么**（这个函数和这个变量）**就叫做**闭包**。
 
 闭包（closure）是 Javascript 语言的一个难点，也是它的特色，很多高级应用都要依靠闭包实现。
 理解闭包，首先必须理解变量作用域。前面提到，JavaScript 有两种作用域：全局作用域和函数作用域。函数内部可以直接读取全局变量。
 
+## 10、柯里化
 
-## 9、一些易错的坑
+**柯里化**是一个听起来很高大上的概念，但也很好理解。简单来说就是一个返回函数的函数，然后将函数的参数中的一个或几个参数确定下来，如将 f(x,y) 变成 f(x=1)(y) 或 f(y=1)x，柯里化可以将真实计算拖延到最后再做。这里贴两个详细介绍柯里化的文章：[http://www.yinwang.org/blog-cn/2013/04/02/currying](http://www.yinwang.org/blog-cn/2013/04/02/currying "null") 、[https://zhuanlan.zhihu.com/p/31271179](https://zhuanlan.zhihu.com/p/31271179 "null")
+
+- 举两个例子：
+```
+  // 第一个例子：
+  // 柯里化之前
+  function sum(x,y){
+      return x+y
+  }
+  // 柯里化之后
+  function addOne(y){
+      return sum(1, y)
+  }
+
+  // 第二个例子：
+  // 柯里化之前
+  function Handlebar(template, data){
+      return template.replace('{{name}}', data.name)
+  }
+  // 柯里化之后
+  function Handlebar(template){
+      return function(data){
+          return template.replace('{{name}}', data.name)
+      }
+  }
+```
+上面的代码中，第一个例子好理解，我们来看第二个例子。
+
+柯里化之前，我们要调用函数`Handlebar`，每次都要传一个template模板，比如`Handlebar('<h1>I'm 
+ {{name}}</h1>',{name:'noch'})` ，如果这个一个模板（即参数`template`为`'<h1>I'm  {{name}}</h1>'`） 我们需要用到很多次，难道每次调用都要赋一次值吗？为了简化函数`Handlebar`的这种情况下的调用，我们就对该函数进行了柯里化。之后再使用时，首先这么调用`var newHandlebar= Handlebar('<h1>I'm {{name}}</h1>')` ，相当于`给template`赋了值，然后调用函数`newHandlebar`：`newHandlebar({name:'enoch'})` 即可
+
+
+## 11、一些易错的坑
 看了这么多概念，觉得函数貌似也不太难呢？嘿嘿，那么请继续，下面将写一些函数中易错的坑。
 - 题目1：求f1.call()的结果
 ```
@@ -342,12 +411,9 @@ f1.call( obj )
 为什么两个 this 值不一样？
 ```
 本题答案：
-
 =>每个函数都有自己的 this，为什么会一样？
-
 =>this 就是 call 的第一个参数，第一个 this 对应的 call 是 f1.call(obj)，第二个 this 对应的 call 是 f2.call()
-
-=>this 和 arguments 都是参数，参数都要在函数执行（call）的时候才能确定
+ =>this 和 arguments 都是参数，参数都要在函数执行（call）的时候才能确定
 
 
 
