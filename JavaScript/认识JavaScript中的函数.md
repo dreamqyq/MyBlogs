@@ -52,7 +52,7 @@ var fn5 = new Function(
 ```
 其中`new Function()` 中，最后一个参数表示函数体，前面的参数表示传入函数的参数。
 
-- 最酷炫的声明方法：箭头函数
+- 最酷炫的声明方法：箭头函数（详情可见本文第14条）
 `var fn6 = (x,y) => {return x+y}`箭头前面表示传入函数的参数，箭头后面表示函数体。
 如果只有一个参数，参数的圆括号可以省略：
 ` var fn7 = x => {return x*2} `
@@ -270,12 +270,134 @@ JS会将其变成一个数字对象，即`Number(10)`。
   }
 ```
 上面的代码中，第一个例子好理解，我们来看第二个例子。
-
 柯里化之前，我们要调用函数`Handlebar`，每次都要传一个template模板，比如`Handlebar('<h1>I'm 
  {{name}}</h1>',{name:'noch'})` ，如果这个一个模板（即参数`template`为`'<h1>I'm  {{name}}</h1>'`） 我们需要用到很多次，难道每次调用都要赋一次值吗？为了简化函数`Handlebar`的这种情况下的调用，我们就对该函数进行了柯里化。之后再使用时，首先这么调用`var newHandlebar= Handlebar('<h1>I'm {{name}}</h1>')` ，相当于`给template`赋了值，然后调用函数`newHandlebar`：`newHandlebar({name:'enoch'})` 即可
 
+- 一道关于柯里化的题目：
+请写出一个柯里化其他函数的函数 curry，这个函数能够将接受多个参数的函数，变成多个接受一个参数的函数，具体见示例（这是 lodash.curry 的文档示例）：
+```
+function curry(???){
+    ???
+    return ???
+}
+var abc = function(a, b, c) {
+  return [a, b, c];
+};
 
-## 11、一些易错的坑
+var curried = curry(abc);
+
+curried(1)(2)(3);
+// => [1, 2, 3]
+
+curried(1, 2)(3);
+// => [1, 2, 3]
+
+curried(1, 2, 3);
+// => [1, 2, 3]
+```
+答案如下：
+```
+function curry(func , fixedParams){
+    if ( !Array.isArray(fixedParams) ) { fixedParams = [ ] }
+    return function(){
+        let newParams = Array.prototype.slice.call(arguments); // 新传的所有参数
+        if ( (fixedParams.length+newParams.length) < func.length ) {
+            return curry(func , fixedParams.concat(newParams));
+        }else{
+            return func.apply(undefined, fixedParams.concat(newParams));
+        }
+    };
+}
+```
+
+
+## 11、高阶函数
+
+- 在数学和计算机科学中，高阶函数是至少满足下列一个条件的函数（也就是说__至少满足下列一个条件的函数就被称为高阶函数__）：
+  - 接受一个或多个函数作为输入：如：`forEach` 、`sort`、 `map`、 `filter` 、`reduce`
+  - 输出一个函数：如：`bind` 、`lodash.curry`
+  - 不过它也可以同时满足两个条件：如：`Function.prototype.bind`
+- 那么高阶函数有什么用呢：最重要的一条就是可以将函数任意的组合。（如react中的很多应用）
+
+## 12、回调（`callback`）
+
+- 名词形式：被当做参数的函数就是回调
+- 动词形式：调用这个回调
+- 举个例子：
+`fn(function(){})` ：函数`fn`中的参数是一个函数，在`fn`中调用了这个函数，那么这个函数就是**回调函数**，调用的过程就是**回调**。
+- **注意**：回调跟异步没有任何关系
+
+## 13、构造函数
+
+简单的来说**返回对象的函数就是构造函数** 。（具体用法可看我的一篇[介绍面向对象的博客](https://www.jianshu.com/p/f682c3a59692) 第五条）。
+
+比如`new Number()` 得到的就是一个数值对象，一般的，**构造函数的函数名首字母要大写**。
+
+再举个栗子，我们自己写一个构造函数。
+```
+function Person(){} // 这就是个构造函数，何以见得，就要看你如何调用
+var person1 = Person() // 这么写的话，函数Person什么也没有返回
+var person2 = new Person() //使用new，函数Person中默认会多出几行，其中就包括会返回一个空对象
+
+// 如果想在函数中添加属性，可以使用this，即：
+function Person(){
+  this.name = ''
+  return this // 这一行可以不用写
+}
+var person3 = new Person({}) // 这么调用即可，会为传入的空对象增加一个name的属性
+```
+
+## 14、箭头函数
+
+箭头函数的形式在本文第2条已经介绍，这里不再赘述。接下来主要介绍一下箭头函数和普通的函数的区别：
+- **箭头函数没有`this`**，对，这就是它们之间唯一的区别。具体的说就是：箭头函数中如果使用了`this`，此时`this`就是相当于一个普通的参数，由于箭头函数本身没有`this`，那么他就会找它的父级中的`this`来确定`this`的值。
+- 举个例子：
+```
+setTimeout(function(){
+	console.log(this)
+}.bind({name:'enoch'}),1000)
+// 一秒后打印出 {name: "enoch"}
+// 如果没有用bind绑定this ，打印出的是window对象
+```
+```
+setTimeout(function(){
+	console.log(this) // A
+	setTimeout(function(){
+		console.log(this) // B
+	},1000)
+}.bind({name:'enoch'}),1000)
+// 第一秒打印出 {name: "enoch"}，第二秒打印出window对象
+```
+第二个代码块中：`setTimeout`中又有一个`setTimeout`，两个`setTimeout`都会执行打印`this`这句话，而A处的`this`和B处的`this`显然不是一个值（A处的`this`为`{name: "enoch"}`，B处的 `this`为`window`对象）。
+如果你想让两个`this`都是`{name: "enoch"}`，可以这么做，里面的函数也用`bind`绑定外面的`this`：
+```
+setTimeout(function(){
+    console.log(this) // A
+    setTimeout(function(){
+        console.log(this) // B
+    }.bind(this),1000)
+}.bind({name:'enoch'}),1000)
+```
+或者使用箭头函数
+```
+setTimeout(function(){
+    console.log(this) // A
+    setTimeout(()=>{
+        console.log(this) // B
+    },1000)
+}.bind({name:'enoch'}),1000)
+```
+那么如果我硬要用`call`来指定箭头函数的`this`可以嘛，答案是否定的，请看代码：
+```
+var fn = ()=>{console.log(this)}
+fn() // 此时打印出的是window对象
+fn.call({name:'enoch'}) 
+// 此时打印出来的还是window对象，箭头函数没有接收你指定的this
+```
+所以使用箭头函数可以很容易的做到函数里面的`this`就是外面的`this`，不用担心函数的`this`会莫名的改变。
+
+
+## 15、一些易错的坑
 看了这么多概念，觉得函数貌似也不太难呢？嘿嘿，那么请继续，下面将写一些函数中易错的坑。
 - 题目1：求f1.call()的结果
 ```
