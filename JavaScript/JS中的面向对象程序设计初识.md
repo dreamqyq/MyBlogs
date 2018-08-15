@@ -293,27 +293,27 @@ x.fn1(options)
 
 ## 8、做个小练习吧
 
-补全下面的代码：
+1.  补全下面的代码：
 ```
 function Human(options){
 
 } // 构造函数结束
 
-Human.prototype.______ = ___________ 
-Human.prototype.______ = ___________ 
-Human.prototype.______ = ___________ 
+Human.prototype.______ = ___________
+Human.prototype.______ = ___________
+Human.prototype.______ = ___________
 
 var human = new Human({name:'Frank', city: 'Hangzhou'})
 var human2 = new Human({name:'Jack', city: 'Hangzhou'})
 ```
-补全代码，使得 human 对象满足以下条件：
-- `human` 这个对象本身具有属性 `name` 和 `city`
-- `human.__proto__ `对应的对象（也就是原型）具有物种（species）、走（walk）和使用工具（useTools）这几个属性
-- `human.__proto__.constructor === Human` 为 true
+  - 补全代码，使得 human 对象满足以下条件：
+    - `human` 这个对象本身具有属性 `name` 和 `city`
+    - `human.__proto__ `对应的对象（也就是原型）具有物种（species）、走（walk）和使用工具（useTools）这几个属性
+    - `human.__proto__.constructor === Human` 为 true
 
 human2 和 human 类似。
 
-参考答案：
+  - 参考答案：
 ```
 function Human(options){
     this.name = options.name
@@ -321,7 +321,7 @@ function Human(options){
 
 } // 构造函数结束
 
-Human.prototype.species = 'Human' 
+Human.prototype.species = 'Human'
 Human.prototype.walk = function(){}
 Human.prototype.useTools = function(){}
 
@@ -329,7 +329,38 @@ var human = new Human({name:'Frank', city: 'Hangzhou'})
 var human2 = new Human({name:'Jack', city: 'Hangzhou'})
 ```
 
+2.  填空（本题不给答案，不确定的可以直接在控制台测试）：
 
+```
+var object = {}
+object.__proto__ ===  ????填空1????  // 为 true
 
+var fn = function(){}
+fn.__proto__ === ????填空2????  // 为 true
+fn.__proto__.__proto__ === ????填空3???? // 为 true
 
+var array = []
+array.__proto__ === ????填空4???? // 为 true
+array.__proto__.__proto__ === ????填空5???? // 为 true
 
+Function.__proto__ === ????填空6???? // 为 true
+Array.__proto__ === ????填空7???? // 为 true
+Object.__proto__ === ????填空8???? // 为 true
+
+true.__proto__ === ????填空9???? // 为 true
+
+Function.prototype.__proto__ === ????填空10???? // 为 true
+```
+
+3. 在 ES5 中如何用函数模拟一个类？
+- 参考答案：
+  ES 5 没有 class 关键字，所以只能使用函数来模拟类。代码如下：
+  ```
+  function Human(name){
+    this.name = name
+  }
+  Human.prototype.run = function(){}
+
+  var person = new Human('enoch')
+
+  ```
