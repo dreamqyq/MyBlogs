@@ -1,32 +1,39 @@
 **前言**：是一个分散式版本控制软件，最初由林纳斯·托瓦兹制作，于2005年以GPL协议出品。如[网站github](https://github.com/)，本文简单的介绍一些的git 的常用操作。
 
 ## 1、 `git init`
+
 命令作用：在当前目录新建一个Git代码库
 使用时间：当需要创建新仓库时使用
 代码实例：`git init`
+
 ![](https://upload-images.jianshu.io/upload_images/11827773-5d65ee73b5885f38.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 ## 2、` git add`
+
 命令作用：添加指定文件到暂存区
 使用时间：当本地创建文件或更新文件时，需要现将其存入暂存区
 代码实例：`git add index.html`
+
 ![](https://upload-images.jianshu.io/upload_images/11827773-c48879435da98583.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ## 3、`git commit -v`
 
-
 命令作用：提交时显示所有diff信息 
 代码实例：`git commit -v`
+
 ![](https://upload-images.jianshu.io/upload_images/11827773-34e6dfe939775af9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ## 4、 `git commit -m`
+
 命令作用：提交暂存区到仓库区
 使用时间：当所有的文件都创建或者更新完成并都提交至暂存区后使用
 代码实例：` git commit -m "新的更新"`
+
 ![](https://upload-images.jianshu.io/upload_images/11827773-a5ed735e7ad74794.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ## 5、代码上传
+
 - `git pull` 取回远程仓库的变化，并与本地分支合并
 - `git push` 上传本地指定分支到远程仓库
 
@@ -37,6 +44,14 @@
 
 ## 7、git中commit合并
 
+大致流程：
+```
+git log |head
+git rebase -i d1
+# if fail, use git rebase --abort
+git push --force
+```
+详细流程：
 1. 首先：查看提交历史，`git log`,历史记录是按照时间排序的，时间近的排在前面。
 2. `git rebase`。想要合并1-3条，有两个方法：
     - 从HEAD版本开始往过去数3个版本

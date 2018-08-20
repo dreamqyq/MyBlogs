@@ -11,9 +11,9 @@
   - 第二部分 `request.setRequestHeader('content-type','x-www-form-urlencoded')`
   - 第四部分 `request.send('a=1&b=2')`
 - JS 可以获取任意响应 header 吗
-  - 第一部分 `request.status` / `request.statusText`
-  - 第二部分 `request.getResponseHeader()` / `request.getAllResponseHeaders()`
-  - 第四部分 `request.responseText`
+  - 第一部分 `response.status` / `request.statusText`
+  - 第二部分 `response.getResponseHeader()` / `request.getAllResponseHeaders()`
+  - 第四部分 `response.responseText`
 
 
 ## 2、初始版本
