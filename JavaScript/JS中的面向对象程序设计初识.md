@@ -115,10 +115,11 @@ v.price // 1000
 
 `var v = new Vehicle();`使用`new`，JS默默的做了哪些事情呢：
 - 创建临时对象
-- `临时对象.__proto__ = Vehicle.prototype`
-- return 临时对象
-- `Viehicle.prototype = { constructor: 构造函数 }`
 - 将这个临时对象赋值给函数内部的`this`关键字。
+- `Viehicle.prototype = { constructor: 构造函数 }`
+- `临时对象.__proto__ = Vehicle.prototype`
+- 执行 `Vehicle.apply(this,arguments)`
+- `return this` 即 `return 创建的临时对象`
 
 ![来自方方的示意图](https://upload-images.jianshu.io/upload_images/11827773-f46151a4a4671b9d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
